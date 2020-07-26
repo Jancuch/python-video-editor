@@ -1,22 +1,51 @@
 from moviepy.editor import *
-from moviepy.video.fx.all import crop
-clip = VideoFileClip("./data/videos/pyro.mp4").subclip(0 , 23)
-audio = AudioFileClip("./data/audio/reposted.mp3")
-clip1 = VideoFileClip("./data/videos/pyro.mp4").subclip(10 ,20)
+from moviepy.video.fx.all import crop , loop
+from PIL import Image, ImageFont, ImageDraw as pil
 
-logo = ImageClip("./data/images/ask.png")
-
-logo = logo.resize((800,100)) # if you need to resize...
-#logo.margin(right=8, top=8, opacity=0) # (optional) logo-border padding
-logo = logo.set_position(("center","top"))
+class memegen():
 
 
-final = concatenate_videoclips([clip , clip1 , clip1, clip1, clip1, clip1])
+    def videogen(self , video , audio , image , loopinfo , loopcount):
+        clip = VideoFileClip(video).subclip(0 , loopinfo[2])
+        clip1 = VideoFileClip(video).subclip(loopinfo[0] , loopinfo[1])
+        audio = AudioFileClip(audio)
+        image = ImageClip(image)
+        image = image.set_position(("center","top"))
+        clip1 = loop(clip1 , loopcount)
+        final = concatenate_videoclips([clip , clip1])
+        (w, h) = clip.size
+        final = crop(final, width=800, height=800, x_center=w/2, y_center=h/2)
+        final = final.set_audio(audio)
+        final = CompositeVideoClip([final, image.set_duration(final.duration)])
+        countlooptime = loopinfo[1] - loopinfo[0] 
+        countlooptime = countlooptime * loopcount + loopinfo[2]
+        final = final.subclip(0 , countlooptime)
+        final.write_videofile("./output/output.mp4")
+    
+    def imagegen(self, path , txt , size , orientation):
+        image = Image.open(path)
+        draw = pil.ImageDraw(image)
+        size1 = size
+        font = ImageFont.truetype(r'./data/arial.ttf' , size=size1)
+        txt1 = txt
+        draw.text((5,5),font=font , align=orientation , text=txt1)
+        image.show()
+        image = image.save('./data/images/ask1.png')
+        return path
 
-(w, h) = clip.size
-print(w , h)
-final = crop(final, width=800, height=800, x_center=800, y_center=800)
-final = final.set_audio(audio)
-final = CompositeVideoClip([final, logo.set_duration(final.duration)])
-final = final.subclip(0 , 40)
-final.write_videofile("./output/e-pyro.mp4")
+meme = memegen()
+meme.imagegen('./data/images/ask.png' , '       robert kiedy \n     kupuje gry w "nizu" ', 40 , "center")
+meme.videogen("./data/videos/pyro.mp4" , "./data/audio/reposted.mp3", "./data/images/ask1.png" , [10 , 20 ,23] , 6)
+
+
+
+
+
+
+
+
+
+
+
+
+
