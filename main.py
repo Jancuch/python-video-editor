@@ -61,7 +61,7 @@ class memegen():
             video = video.write_videofile('./output/output2.mp4', codec='libx264', audio=True, audio_codec='aac')
 
         ren = videocut(video , loopinfo , loopcount, audio)
-        ren = addImage(ren , "./data/images/ask.png")
+        ren = addImage(ren , image)
         render(ren)
 
     def imagegen(self, txt , fsize):
@@ -78,23 +78,23 @@ class memegen():
         print(new_txt)
         stringconv = ''.join(map(str , new_txt))
         print(stringconv)
-        image = Image.open('./data/images/ask.png')
+        image = Image.open('./data/images/plz.png')
         font = ImageFont.truetype(r'./data/arial.ttf' , fsize)
         
         draw = pil.Draw(image)
-        draw.text((30 , 0 ) , stringconv , fill=(255,255,255) , align='center' , font=font )
+        draw.text((30 , 0 ) , stringconv , fill=(20,20,20) , align='center' , font=font )
         print(image.size[0])
         #draw.text(txt)
         
-        image.show()
         
-        image = image.save('./data/images/ask1.png')
+        
+        image = image.save('./data/images/plz1.png')
         return image
         
 
 meme = memegen()
-img =meme.imagegen( '0123456789012345678901234567890sssssssssssssssssssssssssssssssssssssssssssss' , 70)
-meme.videogen("./data/videos/pyro.mp4" ,audio=None,  image="./data/images/plz1" , loopinfo=[10 , 20 ,23] , loopcount=10)
+img =meme.imagegen( 'Martyna do kurwy nie spiewaj juz ILE MASZ KOKSU W GLOWIE OSZALEJE ZARAZ' , 70)
+meme.videogen("./data/videos/pyro.mp4" ,audio="./data/audio/5g.mp3",  image="./data/images/plz1.png" , loopinfo=[10 , 20 ,23] , loopcount=1)
 
 
 
