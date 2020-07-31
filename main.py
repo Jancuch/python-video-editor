@@ -21,28 +21,36 @@ class memegen():
     def videogen(self , video , audio , image , loopinfo , loopcount):
         
         def videocut(video , loopinfo , loopcount , audio):
+
             audio1 = AudioFileClip("./data/audio/lol.mp3")
             audio1 = audio1.volumex(0)
-            clip = VideoFileClip(video).subclip(0, loopinfo[2])
-            clip1 = VideoFileClip(video).subclip(loopinfo[0] , loopinfo[1])
+            if loopinfo != 0 :
+            	clip = VideoFileClip(video).subclip(0, loopinfo[2])
+            	clip1 = VideoFileClip(video).subclip(loopinfo[0] , loopinfo[1])
             
-            loopcount1 = 0 
-            print(loopcount)
-            clip1 = loop(clip1 ,loopcount)
-            countlooptime = loopinfo[1] - loopinfo[0] 
-            countlooptime = countlooptime * loopcount + loopinfo[2]
+            	loopcount1 = 0 
+            	
+            	clip1 = loop(clip1 ,loopcount)
+            	countlooptime = loopinfo[1] - loopinfo[0] 
+            	countlooptime = countlooptime * loopcount + loopinfo[2]
             
-            clip = concatenate_videoclips([clip , clip1])
+            	clip = concatenate_videoclips([clip , clip1])
+            else:
+            	clip = VideoFileClip(video)
             (w, h) = clip.size
+
             clip = crop(clip, width=800, height=800, x_center=w/2, y_center=h/2 )
-            clip1 = clip1.set_audio(audio1)
-            clip = clip.set_audio(audio1)
-            clip = clip.subclip(0, countlooptime)
+            if loopinfo != 0 :
+            	clip = clip.set_audio(audio1)
+            	clip = clip.subclip(0, countlooptime)
             
             if audio:
                 audio = AudioFileClip(audio)
                 clip = clip.set_audio(audio)
-                clip = clip.subclip(0 , countlooptime)
+                if loopinfo != 0:
+                	clip = clip.subclip(0 , countlooptime)
+                else:
+                	clip = clip.subclip(0 , clip.duration)
             else:
                 clip = clip
         
@@ -59,9 +67,12 @@ class memegen():
 
         def render(video):
             video = video.write_videofile('./output/output2.mp4', codec='libx264', audio=True, audio_codec='aac')
-
-        ren = videocut(video , loopinfo , loopcount, audio)
-        ren = addImage(ren , image)
+        if loopinfo and loopcount:
+        	ren = videocut(video , loopinfo , loopcount, audio)
+        else:
+        	ren = videocut(video ,loopinfo , loopcount, audio)
+        if image:
+        	ren = addImage(ren , image)
         render(ren)
 
     def imagegen(self, txt , fsize):
@@ -70,9 +81,10 @@ class memegen():
         for letter in txt:
             new_txt.append(letter)
             letter_count = letter_count + 1 
-            if letter_count == 19:
+            if letter_count == 20:
                 new_txt.append('\n')
                 letter_count = 0
+
                 
                 
         print(new_txt)
@@ -82,19 +94,19 @@ class memegen():
         font = ImageFont.truetype(r'./data/arial.ttf' , fsize)
         
         draw = pil.Draw(image)
-        draw.text((30 , 0 ) , stringconv , fill=(20,20,20) , align='center' , font=font )
+        draw.text((20 , 0 ) , stringconv , fill=(20,20,20) , align='center' , font=font )
         print(image.size[0])
         #draw.text(txt)
         
         
-        
+        path = './data/images/plz1.png'
         image = image.save('./data/images/plz1.png')
-        return image
+        return path
         
 
 meme = memegen()
-img =meme.imagegen( 'Martyna do kurwy nie spiewaj juz ILE MASZ KOKSU W GLOWIE OSZALEJE ZARAZ' , 70)
-meme.videogen("./data/videos/pyro.mp4" ,audio="./data/audio/5g.mp3",  image="./data/images/plz1.png" , loopinfo=[10 , 20 ,23] , loopcount=1)
+img =meme.imagegen( 'Jebac Natana' , 70)
+meme.videogen("./data/videos/pyro.mp4" ,audio="./data/audio/5g.mp3",  image=None , loopinfo=0 , loopcount=1)
 
 
 
